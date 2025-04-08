@@ -37,7 +37,7 @@ This script will:
 
 ```
 pip3 install -r requirements.txt
-python3 avif_checker.py
+python3 avif_preloader.py
 ```
 
 You will be prompted to enter your sitemap URL, for example:
