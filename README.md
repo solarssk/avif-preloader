@@ -1,4 +1,4 @@
-# 🖼️ AVIF Checker
+# 🖼️ AVIF Preloader
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=flat-square)
 ![License](https://img.shields.io/github/license/solarssk/avif-checker?style=flat-square)
