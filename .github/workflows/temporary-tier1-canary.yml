@@ -1,0 +1,39 @@
+name: Temporary intentional noncompliance canary
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  default-auto:
+    uses: solarssk/playbook/.github/workflows/verify-tier.yml@13da3943c81dd251d470a2ac82fbed705c2e8a1a
+  explicit-tier1:
+    uses: solarssk/playbook/.github/workflows/verify-tier.yml@13da3943c81dd251d470a2ac82fbed705c2e8a1a
+    with:
+      tier: '1'
+  observe:
+    if: always()
+    needs: [default-auto, explicit-tier1]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assert caller-visible failures and outputs
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          needs = json.loads(os.environ["NEEDS_JSON"])
+          print(json.dumps(needs, indent=2))
+          auto = needs["default-auto"]
+          explicit = needs["explicit-tier1"]
+          assert auto["result"] == "failure", auto
+          assert auto["outputs"].get("automated_checks", "") == "", auto
+          assert auto["outputs"].get("assessment", "") == "", auto
+          assert explicit["result"] == "failure", explicit
+          assert explicit["outputs"].get("automated_checks") == "failed", explicit
+          assert explicit["outputs"].get("assessment") == "failed", explicit
+          print("Expected intentional noncompliance and early-auto output contract confirmed.")
+          PY
